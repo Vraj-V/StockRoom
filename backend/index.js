@@ -13,6 +13,17 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => res.json({ message: 'Product API is running' }));
+
+app.use(async (req, res, next) => {
+	try {
+		await connectDB();
+		next();
+	} catch (error) {
+		console.error(`Database connection failed: ${error.message}`);
+		res.status(500).json({ message: 'Database connection failed', error: error.message });
+	}
+});
+
 app.post('/api/auth/signup', signup);
 app.post('/api/auth/login', login);
 app.post('/api/auth/logout', logout);
@@ -25,21 +36,16 @@ app.use((error, req, res, next) => {
 	return res.status(500).json({ message: 'Internal server error' });
 });
 
-const startServer = async () => {
-	try {
-		await connectDB();
-		const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-		server.on('error', (error) => {
-			if (error.code === 'EADDRINUSE') {
-				console.error(`Port ${PORT} is already in use. Stop the existing backend process before starting another one.`);
-				process.exit(1);
-			}
-			throw error;
-		});
-	} catch (error) {
-		console.error(`Startup failed: ${error.message}`);
-		process.exit(1);
-	}
-};
+// Local development only. On Vercel the exported app is used instead.
+if (require.main === module) {
+	const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+	server.on('error', (error) => {
+		if (error.code === 'EADDRINUSE') {
+			console.error(`Port ${PORT} is already in use. Stop the existing backend process before starting another one.`);
+			process.exit(1);
+		}
+		throw error;
+	});
+}
 
-startServer();
+module.exports = app;
