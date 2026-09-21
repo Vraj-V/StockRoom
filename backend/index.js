@@ -24,10 +24,10 @@ app.use(async (req, res, next) => {
 	}
 });
 
-app.post('/api/auth/signup', signup);
-app.post('/api/auth/login', login);
-app.post('/api/auth/logout', logout);
-app.use('/api/products', productRoutes);
+app.post('/auth/signup', signup);
+app.post('/auth/login', login);
+app.post('/auth/logout', logout);
+app.use('/products', productRoutes);
 
 app.get("/api/health", async (req, res) => {
   try {
