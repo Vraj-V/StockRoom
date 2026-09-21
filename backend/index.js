@@ -5,7 +5,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const productRoutes = require('./route/ProductRoute');
 const { signup, login, logout } = require('./controllers/Auth_cntrl');
-
+const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
