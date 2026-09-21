@@ -29,6 +29,16 @@ app.post('/api/auth/login', login);
 app.post('/api/auth/logout', logout);
 app.use('/api/products', productRoutes);
 
+
+app.get("/api/health", async (req, res) => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 });
+    res.json({ ok: true, state: mongoose.connection.readyState, db: mongoose.connection.name });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message, hasEnv: !!process.env.MONGO_URI });
+  }
+});
+
 app.use((error, req, res, next) => {
 	if (error instanceof SyntaxError && error.status === 400 && error.body) {
 		return res.status(400).json({ message: 'Invalid JSON body' });
